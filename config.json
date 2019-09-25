@@ -1,0 +1,82 @@
+{
+  "description": "RBD plugin for Docker",
+  "documentation": "https://github.com/uid9/docker-volume-rbd",
+  "interface": {
+    "socket": "rbd.sock",
+    "types": [
+      "docker.volumedriver/1.0"
+    ]
+  },
+  "entrypoint": [
+    "/usr/bin/uwsgi",
+    "--http-socket",
+    "/run/docker/plugins/rbd.sock",
+    "--plugin",
+    "python3",
+    "--wsgi-file",
+    "/docker-volume-rbd.py"
+  ],
+  "network": {
+    "type": "host"
+  },
+  "mounts": [
+    {
+      "source": "/dev",
+      "destination": "/dev",
+      "type": "bind",
+      "options": [
+        "shared",
+        "rbind"
+      ]
+    },
+    {
+      "source": "/etc/ceph",
+      "destination": "/etc/ceph",
+      "type": "bind",
+      "options": [
+        "rbind"
+      ]
+    },
+    {
+      "source": "/sys",
+      "destination": "/sys",
+      "type": "bind",
+      "options": [
+        "rbind"
+      ]
+    }
+  ],
+  "propagatedmount": "/mnt",
+  "env": [
+    {
+      "name": "PLUGIN_VERSION",
+      "Description": "Current version of RBD plugin for Docker Plugin",
+      "settable": [
+        "value"
+      ],
+      "value": "0.1"
+    },
+        {
+      "name": "RBD_POOL",
+      "Description": "Rbd pool where volumes will be created",
+      "settable": [
+        "value"
+      ]
+    },
+    {
+      "name": "MOUNT_OPTIONS",
+      "Description": "Options to pass to the mount command",
+      "settable": [
+        "value"
+      ],
+      "value": "noatime"
+    }
+  ],
+  "linux": {
+    "AllowAllDevices": true,
+    "capabilities": [
+      "CAP_SYS_ADMIN"
+    ],
+    "devices": null
+  }
+}
